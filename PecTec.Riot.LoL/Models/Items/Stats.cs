@@ -1,0 +1,71 @@
+﻿namespace PecTec.Riot.LoL.Models.Items
+{
+    public class Stats
+    {
+        public int FlatHPPoolMod { get; set; }
+        public int RFlatHPModPerLevel { get; set; }
+        public int FlatMPPoolMod { get; set; }
+        public int RFlatMPModPerLevel { get; set; }
+        public int PercentHPPoolMod { get; set; }
+        public int PercentMPPoolMod { get; set; }
+        public int FlatHPRegenMod { get; set; }
+        public int RFlatHPRegenModPerLevel { get; set; }
+        public int PercentHPRegenMod { get; set; }
+        public int FlatMPRegenMod { get; set; }
+        public int RFlatMPRegenModPerLevel { get; set; }
+        public int PercentMPRegenMod { get; set; }
+        public int FlatArmorMod { get; set; }
+        public int RFlatArmorModPerLevel { get; set; }
+        public int PercentArmorMod { get; set; }
+        public int RFlatArmorPenetrationMod { get; set; }
+        public int RFlatArmorPenetrationModPerLevel { get; set; }
+        public int RPercentArmorPenetrationMod { get; set; }
+        public int RPercentArmorPenetrationModPerLevel { get; set; }
+        public int FlatPhysicalDamageMod { get; set; }
+        public int RFlatPhysicalDamageModPerLevel { get; set; }
+        public int PercentPhysicalDamageMod { get; set; }
+        public int FlatMagicDamageMod { get; set; }
+        public int RFlatMagicDamageModPerLevel { get; set; }
+        public int PercentMagicDamageMod { get; set; }
+        public int FlatMovementSpeedMod { get; set; }
+        public int RFlatMovementSpeedModPerLevel { get; set; }
+        public int PercentMovementSpeedMod { get; set; }
+        public int RPercentMovementSpeedModPerLevel { get; set; }
+        public int FlatAttackSpeedMod { get; set; }
+        public int PercentAttackSpeedMod { get; set; }
+        public int RPercentAttackSpeedModPerLevel { get; set; }
+        public int RFlatDodgeMod { get; set; }
+        public int RFlatDodgeModPerLevel { get; set; }
+        public int PercentDodgeMod { get; set; }
+        public int FlatCritChanceMod { get; set; }
+        public int RFlatCritChanceModPerLevel { get; set; }
+        public int PercentCritChanceMod { get; set; }
+        public int FlatCritDamageMod { get; set; }
+        public int RFlatCritDamageModPerLevel { get; set; }
+        public int PercentCritDamageMod { get; set; }
+        public int FlatBlockMod { get; set; }
+        public int PercentBlockMod { get; set; }
+        public int FlatSpellBlockMod { get; set; }
+        public int RFlatSpellBlockModPerLevel { get; set; }
+        public int PercentSpellBlockMod { get; set; }
+        public int FlatEXPBonus { get; set; }
+        public int PercentEXPBonus { get; set; }
+        public int RPercentCooldownMod { get; set; }
+        public int RPercentCooldownModPerLevel { get; set; }
+        public int RFlatTimeDeadMod { get; set; }
+        public int RFlatTimeDeadModPerLevel { get; set; }
+        public int RPercentTimeDeadMod { get; set; }
+        public int RPercentTimeDeadModPerLevel { get; set; }
+        public int RFlatGoldPer10Mod { get; set; }
+        public int RFlatMagicPenetrationMod { get; set; }
+        public int RFlatMagicPenetrationModPerLevel { get; set; }
+        public int RPercentMagicPenetrationMod { get; set; }
+        public int RPercentMagicPenetrationModPerLevel { get; set; }
+        public int FlatEnergyRegenMod { get; set; }
+        public int RFlatEnergyRegenModPerLevel { get; set; }
+        public int FlatEnergyPoolMod { get; set; }
+        public int RFlatEnergyModPerLevel { get; set; }
+        public int PercentLifeStealMod { get; set; }
+        public int PercentSpellVampMod { get; set; }
+    }
+}

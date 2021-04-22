@@ -1,45 +1,105 @@
-﻿using PecTec.Riot.Core.Interfaces;
+﻿using Microsoft.Extensions.Caching.Memory;
+using PecTec.Riot.Core.Interfaces;
 using PecTec.Riot.LoL.Interfaces;
 using PecTec.Riot.LoL.Models;
 using PecTec.Riot.LoL.Models.Account;
 using PecTec.Riot.LoL.Models.Account.MatchHistory;
 using PecTec.Riot.LoL.Models.Account.MatchHistory.Timeline;
 using System.Collections.Generic;
+using System.Timers;
 
 namespace PecTec.Riot.LoL
 {
     public class LiveDataRetrieve : ILiveDataRetrieve
     {
+        private const string _oneSecondTimer = "one_second_timer";
+        private const string _twoMinuteTimer = "two_minute_timer";
+
         private readonly IPecTecClient _client;
-        public LiveDataRetrieve(IPecTecClient client)
+        private readonly IMemoryCache _cache;
+        public LiveDataRetrieve(IPecTecClient client, IMemoryCache cache)
         {
             _client = client;
+            _cache = cache;
+            _cache.Set(_oneSecondTimer, 0);
+            _cache.Set(_twoMinuteTimer, 0);
+
+            SetupTimers();
         }
+
+        #region Request Handlers
+        private T RequestForItem<T>(string requestUrl)
+        {
+            if (!CanSubmitRequest())
+            {
+                return default;
+            }
+
+            return _client.GetRequestForItem<T>(requestUrl);
+        }
+
+        private List<T> RequestForList<T>(string requestUrl)
+        {
+            if (!CanSubmitRequest())
+            {
+                return default;
+            }
+
+            return _client.GetRequestForList<T>(requestUrl);
+        }
+
+        private void SetupTimers()
+        {
+            Timer oneSecondTimer = new Timer(1000)
+            {
+                AutoReset = true,
+                Enabled = true
+            };
+            oneSecondTimer.Elapsed += OneSecondTimer_Elapsed;
+            Timer TwoMinuteTimer = new Timer(1000 * 120)
+            {
+                AutoReset = true,
+                Enabled = true
+            };
+            TwoMinuteTimer.Elapsed += TwoMinuteTimer_Elapsed;
+        }
+
+        private void TwoMinuteTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _cache.Set(_twoMinuteTimer, 0);
+        }
+
+        private void OneSecondTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _cache.Set(_oneSecondTimer, 0);
+        }
+
+        #endregion
 
         #region Summoner
 
         public Summoner RetrieveSummonerByAccountId(Regions region, string accountId)
         {
             string requestUrl = GetRequestUrl(region.PlatformRoutingValue, $"/lol/summoner/v4/summoners/by-account/{accountId}");
-            return _client.GetRequestForItem<Summoner>(requestUrl);
+            return RequestForItem<Summoner>(requestUrl);
         }
 
         public Summoner RetrieveSummonerByName(Regions region, string summonerName)
         {
             string requestUrl = GetRequestUrl(region.PlatformRoutingValue, $"/lol/summoner/v4/summoners/by-name/{summonerName}");
-            return _client.GetRequestForItem<Summoner>(requestUrl);
+            return RequestForItem<Summoner>(requestUrl);
         }
 
         public Summoner RetrieveSummonerByPUUID(Regions region, string puuid)
         {
             string requestUrl = GetRequestUrl(region.PlatformRoutingValue, $"/lol/summoner/v4/summoners/by-puuid/{puuid}");
-            return _client.GetRequestForItem<Summoner>(requestUrl);
+            return RequestForItem<Summoner>(requestUrl);
         }
 
         public Summoner RetrieveSummonerBySummonerId(Regions region, string summonerId)
         {
             string requestUrl = GetRequestUrl(region.PlatformRoutingValue, $"/lol/summoner/v4/summoners/{summonerId}");
-            return _client.GetRequestForItem<Summoner>(requestUrl);
+            return RequestForItem<Summoner>(requestUrl);
         }
 
         #endregion
@@ -49,13 +109,13 @@ namespace PecTec.Riot.LoL
         public BasicMatchHistoryMetaData GetBasicMatchHistoryByAccountId(Regions region, string accountId)
         {
             string requestUrl = GetRequestUrl(region.PlatformRoutingValue, $"/lol/match/v4/matchlists/by-account/{accountId}");
-            return _client.GetRequestForItem<BasicMatchHistoryMetaData>(requestUrl);
+            return RequestForItem<BasicMatchHistoryMetaData>(requestUrl);
         }
 
         public List<string> GetMatchHistoryListByPuuid(Regions region, string puuid)
         {
             string requestUrl = GetRequestUrl(region.RegionalRoutingValue, $"/lol/match/v5/matches/by-puuid/{puuid}/ids");
-            return _client.GetRequestForList<string>(requestUrl);
+            return RequestForList<string>(requestUrl);
         }
 
         /// <summary>
@@ -69,14 +129,14 @@ namespace PecTec.Riot.LoL
             GetReadableMatchId(region, ref matchId);
             string requestUrl = GetRequestUrl(region.RegionalRoutingValue, $"/lol/match/v5/matches/{matchId}");
 
-            return _client.GetRequestForItem<MatchData>(requestUrl);
+            return RequestForItem<MatchData>(requestUrl);
         }
 
         public TimelineData GetTimelineFromGameId(Regions region, string matchId)
         {
             GetReadableMatchId(region, ref matchId);
             string requestUrl = GetRequestUrl(region.RegionalRoutingValue, $"/lol/match/v5/matches/{matchId}/timeline");
-            return _client.GetRequestForItem<TimelineData>(requestUrl);
+            return RequestForItem<TimelineData>(requestUrl);
         }
 
         #endregion
@@ -96,6 +156,18 @@ namespace PecTec.Riot.LoL
             }
         }
 
+        private bool CanSubmitRequest()
+        {
+            //TODO: Make the compare values configurable
+            if (!_cache.TryGetValue(_oneSecondTimer, out int oneSecondValue) || oneSecondValue >= 20 || !_cache.TryGetValue(_twoMinuteTimer, out int twoMinuteValue) || twoMinuteValue >= 100)
+            {
+                // If over the limit of calls per second/per 2 minutes, then return default.
+                return false;
+            }
+            _cache.Set(_oneSecondTimer, oneSecondValue++);
+            _cache.Set(_twoMinuteTimer, twoMinuteValue++);
+            return true;
+        }
         #endregion
     }
 }

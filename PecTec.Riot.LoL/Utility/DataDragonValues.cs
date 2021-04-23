@@ -13,7 +13,7 @@ namespace PecTec.Riot.LoL.Utility
         public static string ChampionSpecific(string championName, string patch) => $"http://ddragon.leagueoflegends.com/cdn/{patch}/data/en_US/champion/{championName}.json";
         public static string ChampionSplashArt(string championName, string skinId = "0") => $"http://ddragon.leagueoflegends.com/cdn/img/champion/splash/{championName}_{skinId}.jpg";
         public static string ChampionLoadingArt(string championName, string skinId = "0") => $"http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{championName}_{skinId}.jpg";
-        public static string ChampionSquareArt(string championName) => $"http://ddragon.leagueoflegends.com/cdn/11.7.1/img/champion/{championName}.png";
+        public static string ChampionSquareArt(string championName, string patch) => $"http://ddragon.leagueoflegends.com/cdn/{patch}/img/champion/{championName}";
         public static string ChampionPassiveArt(string championName) => $"http://ddragon.leagueoflegends.com/cdn/img/champion/passive/{championName}_P.jpg";
         public static string SpellArt(string patch, string spellName) => $"http://ddragon.leagueoflegends.com/cdn/{patch}/img/spell/{spellName}.png";
         public static string Items(string patch) => $"http://ddragon.leagueoflegends.com/cdn/{patch}/data/en_US/item.json";
